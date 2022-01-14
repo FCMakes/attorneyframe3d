@@ -1,0 +1,33 @@
+Alice1
+Alice
+Idle
+Green
+I'M ALICE ANGEL
+ByCrossExamination
+Female
+DGSAllegro
+Left
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{CrossExamination}
+("Statement"/"AfterPress")
+if Statement (PressFRM int)/ if AfterPress & hasLeftWitness (PressWitness1FRM int)
+if AfterPress & hasMiddleWitness (PressWitness2FRM int) / if Statement (CorrectEvidence (1) int / "NonObjectionable")
+if AfterPress & hasRightWitness (PressWitness3FRM int) / if Statement && hasCorrectEvidence2 (CorrectEvidence (2) int)
+if Statement (WrongEvidenceFRM int)
+if Statement && hasCorrectEvidence (RightEvidenceFRM int)
+{Reaction} (if has reaction)
+Int WitnessThatReacted

@@ -1,0 +1,9 @@
+Judge
+Judge
+Idle
+White
+GUILTY.
++1
+Male
+NoMusic
+Left
