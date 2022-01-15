@@ -63,8 +63,28 @@ public class FRMCreator : EditorWindow
         PopUpEvidence,
         EvidenceHide,
         EvidenceHideImmediate,
-        TalkStateChanged,
-        PresentEvidenceStateChanged
+        ProceedDelayed,
+        FlashEffect,
+        Examined3dObjectChange,
+        Set3dExaminedObjectAnimatorTrigger,
+        CourtZoomedOut,
+        CourtZoomOut,
+        CourtRotate1,
+        CourtRotate2,
+        FixCamera,
+        PastEffectOn,
+        PastEffectOff,
+        PastEffectOnImmediate,
+        PastEffectOffImmediate,
+        FadeOutDelayed,
+        DeleteEvidence,
+        DeleteProfile,
+        AddProfile,
+        UpdateEvidenceSilent,
+        UnknownSpeaker
+
+
+
 
     }
 

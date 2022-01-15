@@ -114,7 +114,10 @@ public class EvidenceCreator : EditorWindow
             {
                 GameObject.FindObjectOfType<Record>().RemoveProfile(EvidenceName);
             }
-        }        
+        }
+
+        
+
     }
 
 }

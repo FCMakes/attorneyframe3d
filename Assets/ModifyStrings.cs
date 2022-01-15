@@ -3988,7 +3988,20 @@ public class ModifyStrings : MonoBehaviour
                     }
                 }
 
-
+                if (lines[25] == "DeleteEvidence")
+                {
+                    for (int i = 26; i < lines.Length; i++)
+                    {
+                        GameObject.FindObjectOfType<Record>().RemoveEvidence(lines[i]);
+                    }
+                }
+                if (lines[25] == "DeleteProfile")
+                {
+                    for (int i = 26; i < lines.Length; i++)
+                    {
+                        GameObject.FindObjectOfType<Record>().RemoveProfile(lines[i]);
+                    }
+                }
 
                 if (lines.Length > 27 && lines[27] == "AfterPointInPicture")
                 {
