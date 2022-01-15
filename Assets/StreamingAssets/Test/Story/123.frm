@@ -1,12 +1,7 @@
-[FadeOut]
-
-
-
-
-+1
-
-
-
+[ToCEStatement]
+test
+2
+3
 
 
 
@@ -23,4 +18,15 @@
 
 
 
-PenaltyExit
+
+
+
+
+
+
+
+
+
+
+
+

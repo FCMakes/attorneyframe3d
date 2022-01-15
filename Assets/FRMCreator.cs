@@ -88,6 +88,8 @@ public class FRMCreator : EditorWindow
 
     }
 
+    SpecialFRMS spf;
+
     enum InterjectionType
     {
         Objection,
@@ -110,6 +112,49 @@ public class FRMCreator : EditorWindow
         Update
     }
 
+    enum SpecialFRMS
+    {
+        Choice,
+        Examine3d,
+        LoadScene,
+        FadeOut,
+        FadeOut2,
+        FadeOutWhite,
+        ToBeContinued,
+        FadeIn,
+        FadeInWhite,
+        FadeCross,
+        FadeCrossWhite,
+        FadeCrossFast,
+        ToNextCEStatement,
+        ToCEStatement,
+        CameraTween,
+        AfterExamine,
+        Testimony,
+        TestimonyEnd,
+        CharacterFadeIn,
+        CharacterFadeOut,
+        ShowPicture,
+        PointInPicture,
+        PointIn3dEvidence,
+        HidePicture,
+        AfterTestimonyEnd,
+        GavelSlam,
+        GavelSlam3,
+        AllRise,
+        Verdict,
+        CrossExaminationStart,
+        EvidenceEnter,
+        EvidenceExit,
+        EvidenceExitPresent,
+        Present,
+        BGFade,
+        Interjection
+
+
+
+    }
+
     EvidenceOperationType currentEvOpType;
 
     Line26Command additionalevent;
@@ -122,6 +167,7 @@ public class FRMCreator : EditorWindow
     EvidenceSelect.selecttype presentType;
     bool objectionable;
     int statementcount;
+    int lineslength;
 
     [MenuItem("Window/FRM Creator")]
     static void Init()
@@ -168,9 +214,17 @@ public class FRMCreator : EditorWindow
             {
                 mode = 8;
             }
+            if (GUILayout.Button("New Present in 3d Evidence FRM"))
+            {
+                mode = 10;
+            }
             if (GUILayout.Button("New Cross-Examination Start FRM"))
             {
                 mode = 9;
+            }
+            if (GUILayout.Button("New Misc. Special FRM"))
+            {
+                mode = 11;
             }
             editfilepath = EditorGUILayout.TextField("FRM Id to Edit", editfilepath);
             if (GUILayout.Button("Edit existing FRM"))
@@ -475,7 +529,7 @@ public class FRMCreator : EditorWindow
             futurelines[1] = EditorGUILayout.TextField("Wrong FRM", futurelines[1]);
             futurelines[2] = EditorGUILayout.TextField("Right FRM", futurelines[2]);
             futurelines[3] = EditorGUILayout.TextField("Correct area name", futurelines[3]);
-           
+            futurelines[4] = EditorGUILayout.TextField("Question", futurelines[4]);
             futurelines[7] = EditorGUILayout.TextField("Music Change", futurelines[7]);
             additionalevent = (Line26Command)EditorGUILayout.EnumPopup("Additional Event", additionalevent);
             futurelines[25] = additionalevent.ToString().Replace("None", "");
@@ -506,6 +560,104 @@ public class FRMCreator : EditorWindow
 
             }
             if (GUILayout.Button("Back"))
+            {
+                mode = 0;
+            }
+        }
+
+        if (mode == 11)
+        {
+            if (futurelines == null)
+            {
+                futurelines = new List<string>();
+                for (int i = 0; i < 29; i++)
+                {
+                    futurelines.Add("");
+                }
+
+            }
+            spf = (SpecialFRMS)EditorGUILayout.EnumPopup("Special FRM Type", spf);
+            futurelines[0] = "[" + spf.ToString() + "]";
+            lineslength = EditorGUILayout.IntField("Lines length", lineslength);
+            for (int i = 1; i < lineslength + 1; i++) {
+
+                futurelines[i] = EditorGUILayout.TextField("Line #" + i, futurelines[i]);
+
+            }
+            FRMId = EditorGUILayout.IntField("FRM Id", FRMId);
+            if (GUILayout.Button("Create FRM File"))
+            {
+                string path = Path.Combine(Application.streamingAssetsPath, GameObject.FindObjectOfType<ModifyStrings>().CaseName, GameObject.FindObjectOfType<ModifyStrings>().StoryName, FRMId.ToString() + ".frm");
+
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+
+                StreamWriter writer = new StreamWriter(path);
+                foreach (string line in futurelines)
+                {
+                    writer.WriteLine(line);
+                }
+                writer.Close();
+                Debug.Log("Created FRM File at " + path);
+                AssetDatabase.Refresh();
+
+
+            }
+            if (GUILayout.Button("Back"))
+            {
+                mode = 0;
+            }
+
+        }
+
+            if (mode == 10)
+            {
+                if (futurelines == null)
+                {
+                    futurelines = new List<string>();
+                    for (int i = 0; i < 29; i++)
+                    {
+                        futurelines.Add("");
+                    }
+
+                }
+                futurelines[0] = "[PointIn3dExamine]";
+                futurelines[1] = EditorGUILayout.TextField("Wrong FRM", futurelines[1]);
+                futurelines[2] = EditorGUILayout.TextField("Right FRM", futurelines[2]);
+                futurelines[3] = EditorGUILayout.TextField("Correct area name", futurelines[3]);
+
+                futurelines[7] = EditorGUILayout.TextField("Music Change", futurelines[7]);
+                additionalevent = (Line26Command)EditorGUILayout.EnumPopup("Additional Event", additionalevent);
+                futurelines[25] = additionalevent.ToString().Replace("None", "");
+                additionaleventdatanum = EditorGUILayout.IntField("Additional Event Data Size", additionaleventdatanum);
+                for (int i = 26; i < (25 + additionaleventdatanum + 1); i++)
+                {
+                    futurelines[i] = EditorGUILayout.TextField("Additional Event Data Line " + (i - 25).ToString(), futurelines[i]);
+                }
+                FRMId = EditorGUILayout.IntField("FRM Id", FRMId);
+                if (GUILayout.Button("Create FRM File"))
+                {
+                    string path = Path.Combine(Application.streamingAssetsPath, GameObject.FindObjectOfType<ModifyStrings>().CaseName, GameObject.FindObjectOfType<ModifyStrings>().StoryName, FRMId.ToString() + ".frm");
+
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+
+                    StreamWriter writer = new StreamWriter(path);
+                    foreach (string line in futurelines)
+                    {
+                        writer.WriteLine(line);
+                    }
+                    writer.Close();
+                    Debug.Log("Created FRM File at " + path);
+                    AssetDatabase.Refresh();
+
+
+                }
+                if (GUILayout.Button("Back"))
             {
                 mode = 0;
             }

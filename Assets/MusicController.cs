@@ -18,6 +18,10 @@ public class MusicController : MonoBehaviour
 
     public List<AudioClip> Tracks;
 
+    public void Start()
+    {
+        InvokeRepeating("MusicUpdate", 0f, 0.0001f);
+    }
     public void DelayedStopMusic(float time)
     {
         Invoke("StopMusic", time);
@@ -29,34 +33,40 @@ public class MusicController : MonoBehaviour
 
 
 
-    public void Update()
-    {if (base.gameObject.GetComponent<AudioSource>().clip != null)
+    public void MusicUpdate()
+    {
+        Debug.Log("Invoking");
+        if (base.gameObject.GetComponent<AudioSource>().clip != null)
         {
-            foreach (TrackLoopData tld in TrackLoops)
-                if (base.gameObject.GetComponent<AudioSource>().clip.name == tld.name)
+            if (FromName(base.gameObject.GetComponent<AudioSource>().clip.name) != null)
+            {
+                if (base.gameObject.GetComponent<AudioSource>().time >= FromName(base.gameObject.GetComponent<AudioSource>().clip.name).endTime && FromName(base.gameObject.GetComponent<AudioSource>().clip.name).endTime <= base.gameObject.GetComponent<AudioSource>().clip.length || base.gameObject.GetComponent<AudioSource>().time >= base.gameObject.GetComponent<AudioSource>().clip.length && FromName(base.gameObject.GetComponent<AudioSource>().clip.name).endTime > base.gameObject.GetComponent<AudioSource>().clip.length)
                 {
-                   
-                    if (base.gameObject.GetComponent<AudioSource>().time >= tld.endTime)
-                    {
-
-                        base.gameObject.GetComponent<AudioSource>().time = tld.startTime;
-                    }
-                    else
-                    {
-                      
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.KeypadMultiply))
-                    {
-                        base.gameObject.GetComponent<AudioSource>().time = tld.endTime - 2;
-                    }
-
+                    base.gameObject.GetComponent<AudioSource>().time = FromName(base.gameObject.GetComponent<AudioSource>().clip.name).startTime;
                 }
+
+
+                if (Input.GetKeyDown(KeyCode.KeypadMultiply))
+                {
+                    base.gameObject.GetComponent<AudioSource>().time = FromName(base.gameObject.GetComponent<AudioSource>().clip.name).endTime - 3f;
+                }
+            }
         }
-         
+        
       
     }
 
+    public TrackLoopData FromName(string name)
+    {
+        foreach (TrackLoopData tld in TrackLoops)
+        {
+            if (tld.name == name)
+            {
+                return tld;
+            }
+        }
+        return null;
+    }
 
     public AudioClip FindTrack(string name)
     {

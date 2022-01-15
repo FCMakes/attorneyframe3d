@@ -3707,7 +3707,7 @@ public class ModifyStrings : MonoBehaviour
                 }
 
 
-                if (lines[25] == "3dExaminedObjectChange")
+                if (lines[25] == "Examined3dObjectChange")
                 {
                     foreach (Transform child in ExaminedObject.transform)
                     {
@@ -3995,7 +3995,7 @@ public class ModifyStrings : MonoBehaviour
                         GameObject.FindObjectOfType<Record>().RemoveEvidence(lines[i]);
                     }
                 }
-                if (lines[25] == "DeleteProfile")
+                if (lines[25] == "DeleteEvidence")
                 {
                     for (int i = 26; i < lines.Length; i++)
                     {

@@ -13,6 +13,7 @@ public class FRMLoader : EditorWindow
     string charname2;
     float offesttorot;
     float rottime;
+    string toplay;
 
     [MenuItem("Window/FRM Loader")]
     static void Init()
@@ -37,6 +38,15 @@ public class FRMLoader : EditorWindow
         if (GUILayout.Button("Tween"))
         {
             GameObject.FindObjectOfType<MainCameraController>().TweenAngle(totween, 0.5f);
+        }
+
+        toplay = EditorGUILayout.TextField("Music to Play", toplay);
+        if (GUILayout.Button("Play"))
+        {
+            MusicController mc = GameObject.FindObjectOfType<MusicController>();
+            mc.gameObject.GetComponent<AudioSource>().clip = mc.FindTrack(toplay);
+            mc.gameObject.GetComponent<AudioSource>().time = 0f;
+           mc.gameObject.GetComponent<AudioSource>().Play();
         }
 
         tosave = EditorGUILayout.IntField("Slot to save to", tosave);
