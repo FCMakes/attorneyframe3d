@@ -373,12 +373,21 @@ public class FCServices : MonoBehaviour
         }
         return false;
     }
+
+    public static void ChangeLayerRecursive(GameObject parent, string LayerName)
+    {
+        parent.layer = LayerMask.NameToLayer(LayerName);
+        foreach (Transform child in parent.GetComponentsInChildren<Transform>())
+        {
+            child.gameObject.layer = LayerMask.NameToLayer(LayerName);
+        }
+    }
     public static GameObject GetPointTarget(Vector3 point)
     {
 
 
         RaycastHit ray;
-        if (Physics.Raycast(GameObject.FindObjectOfType<MainCameraController>().gameObject.GetComponent<Camera>().ScreenPointToRay(point), out ray))
+        if (Physics.Raycast(GameObject.Find("TargetCam").gameObject.GetComponent<Camera>().ScreenPointToRay(point), out ray))
         {
             return ray.transform.gameObject;
         }
@@ -617,6 +626,21 @@ public class FCServices : MonoBehaviour
             if (param.type == AnimatorControllerParameterType.Bool)
             {
                 controller.SetBool(param.name, false);
+            }
+        }
+    }
+
+    public static void AllAnimatorBoolsToFalse(Animator controller, params string[] ignore)
+    {
+        AnimatorControllerParameter[] parameters = controller.parameters;
+        foreach (AnimatorControllerParameter param in parameters)
+        {
+            if (param.type == AnimatorControllerParameterType.Bool)
+            {
+                if (Array.IndexOf(ignore, param.name) == -1)
+                {
+                    controller.SetBool(param.name, false);
+                }
             }
         }
     }

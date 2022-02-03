@@ -27,7 +27,15 @@ public class SecondaryCameraController : MonoBehaviour
         }
         return null;
     }
+    public bool isAngle(string tocheck)
+    {
+        if (base.gameObject.transform.rotation == WithName(tocheck).rotation && base.gameObject.transform.position == WithName(tocheck).position)
+        {
+            return true;
+        }
+        return false;
 
+    }
     public void UpdateShakePos()
     {
         if (base.gameObject.GetComponent<CameraShake>())

@@ -7,3 +7,21 @@ GGGGAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
 Female
 OBJECTION (DGS CS)
 Left
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ChangeLetterTypeDelay
+0.005

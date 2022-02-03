@@ -45,6 +45,23 @@ public class MainCameraController : MonoBehaviour
 
     }
 
+    public bool isAngle(string tocheck)
+    {
+        if (base.gameObject.transform.rotation == WithName(tocheck).rotation && base.gameObject.transform.position == WithName(tocheck).position)
+        {
+            return true;
+        }
+        return false;
+
+    }
+    public void Update()
+    {
+        if (GameObject.Find("TargetCam").transform.position != base.gameObject.transform.position || GameObject.Find("TargetCam").transform.rotation != base.gameObject.transform.rotation)
+        {
+            GameObject.Find("TargetCam").transform.SetPositionAndRotation(base.gameObject.transform.position, base.gameObject.transform.rotation);
+        }
+    }
+
     public void TweenAngleLongWay(string name, float time)
     {
         if (GameObject.FindObjectOfType<PostProcessingController>() != null)

@@ -15,6 +15,7 @@ public class OptionsController : MonoBehaviour
     {
         GameObject.Find("ChoiceSE").GetComponent<AudioSource>().Play();
         base.gameObject.GetComponent<Canvas>().enabled = true;
+        Start();
     }
     public void Hide()
     {

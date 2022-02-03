@@ -160,7 +160,7 @@ public class TitleScreenController : MonoBehaviour
 
         Vector2 position = CursorControl.GetPosition();
         float d = 1f;
-        if (Gamepad.current != null)
+        if (Gamepad.current != null && !GameObject.FindObjectOfType<OptionsController>().gameObject.GetComponent<Canvas>().enabled)
         {
             CursorControl.SetPosition(position + new Vector2(Gamepad.current.leftStick.ReadValue().x, Gamepad.current.leftStick.ReadValue().y * -1f) * Time.deltaTime * 250f * d * ((float)Screen.width / 695f));
         }
@@ -199,7 +199,10 @@ public class TitleScreenController : MonoBehaviour
 
     public void StartGame()
     {
-        Directory.Delete(Path.Combine(Application.persistentDataPath, "Slot0"), true);
+        
+        if (Directory.Exists(Path.Combine(Application.persistentDataPath, "Slot0"))){
+            Directory.Delete(Path.Combine(Application.persistentDataPath, "Slot0"), true);
+        }
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex + 1);
     }
 
@@ -207,6 +210,10 @@ public class TitleScreenController : MonoBehaviour
     {
         GameObject.Find("ChoiceButtons").GetComponent<Canvas>().enabled = false;
         GameObject.Find("Cases").GetComponent<Canvas>().enabled = true;
+        if (AssetBundleController.casenames.Count > 0)
+        {
+            FCServices.FindChildWithName("Cases", "Text").SetActive(false);
+        }
 
     }
 

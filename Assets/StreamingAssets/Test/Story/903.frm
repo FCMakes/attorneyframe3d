@@ -1,5 +1,5 @@
 Wright
-
+Phoenix
 WaggingFinger
 White
 
@@ -23,9 +23,8 @@ don
 
 
 
-ProceedDelayed
-2
-
+SkipToPose
+FingerWag
 
 
 

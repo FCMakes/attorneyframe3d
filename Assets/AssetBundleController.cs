@@ -36,7 +36,7 @@ public class AssetBundleController : MonoBehaviour
 
         foreach (string dir in Directory.GetDirectories(mainpath))
         {
-            if (!dir.Contains("Slot") && Path.GetFileName(dir) != "Unity")
+            if (!dir.Contains("Slot") && Path.GetFileName(dir) != "Unity" && File.Exists(Path.Combine(dir, Path.GetFileName(dir).ToLower())))
             {
                 AssetBundle ab = AssetBundle.LoadFromFile(Path.Combine(dir, Path.GetFileName(dir).ToLower()));
                 bundles.Add(ab);

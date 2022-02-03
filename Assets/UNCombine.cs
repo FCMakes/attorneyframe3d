@@ -11,51 +11,7 @@ using UnityEngine.UI;
 public class UNCombine : MonoBehaviour
 {
 
-    [MenuItem("FCTools/UNCombine")]
-    static void UNCombineMeshes()
-    {
-        float MeshQ = 0;
-        MeshFilter[] Meshes = Resources.FindObjectsOfTypeAll<MeshFilter>();
-        foreach (MeshFilter mesh in Meshes)
-        {
-
-            if (mesh.gameObject.GetComponent<MeshCollider>() && mesh.sharedMesh != mesh.gameObject.GetComponent<MeshCollider>().sharedMesh)
-            {
-                mesh.sharedMesh = mesh.gameObject.GetComponent<MeshCollider>().sharedMesh;
-                MeshQ += 1f;
-            }
-
-
-        }
-
-
-
-        Debug.Log("Uncombined " + MeshQ.ToString() + " meshes");
-    }
-
-
-
-    [MenuItem("FCTools/UNCombine Method 2")]
-    static void UNCombineMeshes2()
-    {
-        float MeshQ = 0;
-        GameObject[] Meshes = Resources.FindObjectsOfTypeAll<GameObject>();
-        foreach (GameObject meshholder in Meshes)
-        {
-
-            if (meshholder.GetComponent<MeshFilter>() && AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Mesh/" + meshholder.name + ".asset") && meshholder.GetComponent<MeshFilter>().sharedMesh != AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Mesh/" + meshholder.name + ".asset"))
-            {
-                MeshFilter mesh = meshholder.GetComponent<MeshFilter>();
-                mesh.sharedMesh = AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Mesh/" + meshholder.name + ".asset");
-                MeshQ += 1f;
-
-            }
-        }
-
-
-        Debug.Log("Uncombined " + MeshQ.ToString() + " meshes");
-    }
-
+  
     [MenuItem("GameObject/FCTools/Hide untextured (AA)", false, 49)]
     static void DeleteOutline()
     {
@@ -108,44 +64,7 @@ public class UNCombine : MonoBehaviour
         
     }
 
-    [MenuItem("FCTools/See asset type")]
-    static void Tell()
-    {
-
-
-
-        Debug.Log(Selection.activeObject.GetType());
-        Debug.Log(AssetDatabase.GetAssetPath(Selection.activeObject));
-    }
-
-
-    [MenuItem("FCTools/Assign event")]
-    static void assign()
-    {
-
-        Selection.activeGameObject.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => GameObject.FindObjectOfType<SaveLoadController>().ShowConfirmation(Selection.activeGameObject.GetComponent<UnityEngine.UI.Button>()));
-
-
-
-    }
-    public static void SetTextureImporterFormat(Texture2D texture, bool isReadable)
-    {
-        if (null == texture) return;
-
-        string assetPath = AssetDatabase.GetAssetPath(texture);
-        var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-
-       
-        if (tImporter != null)
-        {
-            
-
-            tImporter.isReadable = isReadable;
-            Debug.Log("did shit");
-            AssetDatabase.ImportAsset(assetPath);
-            AssetDatabase.Refresh();
-        }
-    }
+    
     public static void AddDescendantsWithTag(Transform parent, List<GameObject> list)
     {
         foreach (Transform child in parent)
@@ -157,138 +76,7 @@ public class UNCombine : MonoBehaviour
           
         }
     }
-    [MenuItem("FCTools/CreateDir")]
-    static void CreateDirectory()
-    {
-        Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, "Map1"));
-        Debug.Log("Created");
-    }
-
-    [MenuItem("FCTools/CreateCS")]
-    static void CreateCS()
-    {
-        string pathmain = "Assets/";
-
-      
-
-        StreamWriter writer1 = new StreamWriter(Path.Combine(pathmain, "MadeByScript.cs"), true);
-        writer1.WriteLine("using UnityEngine;");
-        writer1.WriteLine("public class MadeByScript : MonoBehaviour");
-        writer1.WriteLine("{");
-        writer1.WriteLine("public void Start()");
-        writer1.WriteLine("{");
-        writer1.WriteLine("Debug.Log(\"Script created, lol\");");
-        writer1.WriteLine("}");
-        writer1.WriteLine("}");
-        writer1.Close();
-
-    }
-    [MenuItem("FCTools/Camera Thing")]
-    static void CameraDo()
-    {
-
-        Selection.activeGameObject.GetComponent<Camera>().transform.SetPositionAndRotation(Camera.current.transform.position, Camera.current.transform.rotation);
-
-    }
-
-    [MenuItem("FCTools/ShowRotation")]
-    static void RotationShow()
-    {
-
-        Debug.Log(Selection.activeGameObject.transform.eulerAngles.y);
-
-    }
-
-    [MenuItem("FCTools/MoveTest")]
-    static void EditAnimation()
-    {
-
-        if (Selection.activeGameObject.GetComponent<Animation>())
-        {
-            AnimationCurve curve = AnimationCurve.Linear(0.0F, 0.0F, 0.0F, 0.0F);
-            Selection.activeGameObject.GetComponent<Animation>().clip.SetCurve("", typeof(Transform), "localPosition.x", curve);
-        }
-     
-        
-
-    }
-
-    [MenuItem("FCTools/Fix Name")]
-    static void Namefix()
-    {
-        foreach (Object obj in Selection.objects)
-        {
-            string source = obj.name;
-            int count = source.Split('1').Length;
-            AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(obj), "Anim" + count);
-
-        }
-
-
-
-    }
    
-
-    [MenuItem("FCTools/Down")]
-    static void down()
-    {
-
-       GameObject newgobj = Instantiate(Selection.activeGameObject, Selection.activeGameObject.transform.parent);
-        Vector3 diff = newgobj.transform.parent.GetChild(4).localPosition - newgobj.transform.parent.GetChild(3).localPosition;
-        newgobj.transform.localPosition += diff;
-        int buttonnum = int.Parse(newgobj.transform.GetChild(0).gameObject.GetComponent<UnityEngine.UI.Text>().text) + 1;
-        newgobj.transform.GetChild(0).gameObject.GetComponent<UnityEngine.UI.Text>().text = buttonnum.ToString();
-        newgobj.name = "Slot" + buttonnum;
-
-
-    }
-
-
-    [MenuItem("FCTools/Add Camera Angle")]
-    static void addangle()
-    {
-        Transform t = Selection.activeGameObject.transform;
-        MainCameraController mcc = GameObject.FindObjectOfType<MainCameraController>();
-        MainCameraController.CameraAngle Angle = new MainCameraController.CameraAngle();
-        Angle.name = t.gameObject.name;
-        Angle.position = t.position;
-        Angle.rotation = t.rotation;
-
-        mcc.AddAngle(Angle);
-
-
-
-
-    }
-
-    [MenuItem("FCTools/Fix Font Batch")]
-    static void FontFix()
-    {
-        foreach (GameObject go in Selection.gameObjects)
-        {
-            foreach (Text txt in go.GetComponentsInChildren<Text>())
-            {
-                txt.font = GameObject.Find("TW_MS_Regular").GetComponent<Text>().font;
-                txt.fontSize += 3;
-            }
-        }
-    }
-   
-
-
-    [MenuItem("FCTools/GetCurves")]
-    static void curves()
-    {
-      foreach (UnityEditor.AnimationClipCurveData acd in AnimationUtility.GetAllCurves((AnimationClip)Selection.activeObject))
-        {
-            Debug.Log(acd.path);
-            Debug.Log(acd.propertyName);
-            Debug.Log(acd.type);
-        }
-
-
-
-    }
 
     [MenuItem("FCTools/Create Fade In Animation")]
     static void FadeIn()
@@ -444,21 +232,12 @@ public class UNCombine : MonoBehaviour
     static void Capture()
     {
 
-        ScreenCapture.CaptureScreenshot(Path.Combine(@"C:/Users/User/Documents/oCam", "Screenshot-" + System.DateTime.Now.ToString().Replace(":", ".").Replace(".", "-").Replace(" ", "-") + ".png"));
-        Debug.Log("Saved screenshot to " + Path.Combine(@"C:/Users/User/Documents/oCam", "Screenshot-" + System.DateTime.Now.ToString().Replace(":", ".").Replace(".", "-").Replace(" ", "-").Replace("/", "-") + ".png"));
+        ScreenCapture.CaptureScreenshot(Path.Combine(Application.dataPath, "Screenshots", "Screenshot-" + System.DateTime.Now.ToString().Replace(":", ".").Replace(".", "-").Replace(" ", "-") + ".png").Replace(@"/", @"\"), 1);
+        Debug.Log("Saved screenshot to " + Path.Combine(Application.dataPath, "Screenshots", "Screenshot-" + System.DateTime.Now.ToString().Replace(":", ".").Replace(".", "-").Replace(" ", "-").Replace("/", "-") + ".png").Replace(@"/", @"\"));
 
     }
 
-    [MenuItem("FCTools/Fix Mesh Colliders")]
-    static void FixColliders()
-    {
-
-      foreach (GameObject go in Selection.gameObjects)
-        {
-            go.GetComponent<MeshCollider>().sharedMesh = go.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-        }
-
-    }
+    
     [MenuItem("Assets/Add to Prefab Controller")]
     static void toprefabcontroller()
     {
@@ -503,39 +282,7 @@ public class UNCombine : MonoBehaviour
         }
     }
 
-    [MenuItem("FCTools/Set Evidence Positions")]
-    static void setevpos()
-    {
-        Record rec = GameObject.FindObjectOfType<Record>();
-        rec.Ev1Pos = FCServices.FindChildWithName(rec.gameObject, rec.EvidenceList[0].name).transform.localPosition;
-        rec.Ev2Pos = FCServices.FindChildWithName(rec.gameObject, rec.EvidenceList[1].name).transform.localPosition;
-        rec.Ev3Pos = FCServices.FindChildWithName(rec.gameObject, rec.EvidenceList[2].name).transform.localPosition;
-        rec.Ev4Pos = FCServices.FindChildWithName(rec.gameObject, rec.EvidenceList[3].name).transform.localPosition;
-        rec.Ev5Pos = FCServices.FindChildWithName(rec.gameObject, rec.EvidenceList[4].name).transform.localPosition;
-
-    }
-
-    [MenuItem("FCTools/Fix Name 3")]
-    static void Namefix3()
-    {
-        foreach (Object obj in Selection.objects)
-        {
-           
-            string source = obj.name;
-            string str = source.Substring(7, 3);
-            int it = int.Parse(str);
-         
-            AssetDatabase.MoveAsset(AssetDatabase.GetAssetPath(obj), Path.Combine("Assets", "temp", "res","a.png"));
-                AssetDatabase.RenameAsset(Path.Combine("Assets", "temp", "res", "a.png"), "Thing2000" + (17 - it).ToString());
-              
-               
-            
-
-        }
-
-
-
-    }
+   
 
 }
 #endif

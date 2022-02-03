@@ -78,12 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Ultimate Tattoo Artist \u2013 Quiong Xiang  \r\nUltimate Painter \u2013
-    Akemi Kawashiga \r\nUltimate Wrestling Champion \u2013 Nominosukune Ten \r\nUltimate
-    Lucky Student \u2013 Yamagishi Nagimoto \r\nUltimate Programmer - Miyano Chinakari
-    \r\nUltimate Ramen Chef - Migno Keng \r\nUltimate Gardener \u2013 Ono Yachi \r\nUltimate
-    Puppeteer \u2013 Kanai Hirose \r\nUltimate Guitarist - Maita Nishidiyama \r\nUltimate
-    Horologist - Tajima Shunso \r\nUltimate Dancer \u2013 Kiyonada Saruko \r\n"
+  m_Text: 
 --- !u!1 &7168838620679245933
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ public class PostProcessingController : MonoBehaviour
     public DepthOfField dof;
     public float satorha;
     // Start is called before the first frame update
-    void Start()
+  public void Start()
     {
         base.gameObject.GetComponent<PostProcessVolume>().profile.TryGetSettings(out cg);
         base.gameObject.GetComponent<PostProcessVolume>().profile.TryGetSettings(out mb);

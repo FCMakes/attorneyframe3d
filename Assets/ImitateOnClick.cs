@@ -60,7 +60,7 @@ public class ImitateOnClick : MonoBehaviour
 
     }
 
-    public void Update()
+    public virtual void Update()
     {
         if (base.gameObject.GetComponentInParent<Canvas>().enabled && base.gameObject.GetComponent<Button>().interactable &&  base.gameObject.activeInHierarchy && !isCovered())
         {

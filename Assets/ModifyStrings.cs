@@ -242,6 +242,10 @@ public class ModifyStrings : MonoBehaviour
     }
     public void Force169Resolution()
     {
+
+       
+
+
         foreach (Camera camera in FCServices.GetAllObjectsOfTypeInScene<Camera>())
         {
             if (!camera.gameObject.GetComponent<CameraResolution>())
@@ -254,7 +258,10 @@ public class ModifyStrings : MonoBehaviour
         foreach (Canvas canvas in FCServices.GetAllObjectsOfTypeInScene<Canvas>())
         {
             canvas.gameObject.GetComponent<CanvasScaler>().referenceResolution = new Vector2(800f, 450f);
-            canvas.gameObject.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+            if (canvas.gameObject.name != "RenderTextures")
+            {
+                canvas.gameObject.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+            }
             if (!canvas.gameObject.GetComponent<AspectRatioFitter>())
             {
                 canvas.gameObject.AddComponent<AspectRatioFitter>().aspectRatio = 16f / 9f;
@@ -336,7 +343,7 @@ public class ModifyStrings : MonoBehaviour
 
 
 
-        if (Gamepad.current != null && GameObject.FindObjectOfType<SaveLoadController>().gameObject.GetComponent<Canvas>().enabled)
+        if (Gamepad.current != null && GameObject.FindObjectOfType<SaveLoadController>().gameObject.GetComponent<Canvas>().enabled && !GameObject.FindObjectOfType<OptionsController>().gameObject.GetComponent<Canvas>().enabled && !GameObject.FindObjectOfType<InstructionsController>().gameObject.GetComponent<Canvas>().enabled)
         {
             CursorControl.SetPosition(cursorPos + new Vector2(Gamepad.current.leftStick.ReadValue().x, Gamepad.current.leftStick.ReadValue().y * -1f) * Time.deltaTime * 250f * multiplier * (Screen.width / 695f));
         }
@@ -393,7 +400,7 @@ public class ModifyStrings : MonoBehaviour
 
     public BaseCharacterController FindCharacter(string name)
     {
-        foreach (BaseCharacterController bcc in GameObject.FindObjectsOfType<BaseCharacterController>())
+        foreach (BaseCharacterController bcc in FCServices.GetAllObjectsOfTypeInScene<BaseCharacterController>())
         {
 
             if (bcc.CharacterName == name)
@@ -609,6 +616,88 @@ public class ModifyStrings : MonoBehaviour
         Fader.Play(int.Parse(MainFCS[10]), 0);
         FCServices.FindChildWithName(GameObject.Find("FadeEffect2"), "Panel").GetComponent<Animator>().Play(int.Parse(MainFCS[11]), 0);
 
+        if (GameObject.FindObjectsOfType<SecondaryCameraController>().Length > 0)
+        {
+            foreach (SecondaryCameraController scc in GameObject.FindObjectsOfType<SecondaryCameraController>())
+            {
+                Debug.Log(scc.name);
+                string[] SCD = File.ReadAllLines(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "SecondaryCamData", scc.name + ".fcs"));
+                Vector3 camPosNew = new Vector3(float.Parse(SCD[0]), float.Parse(SCD[1]), float.Parse(SCD[2]));
+                Quaternion camRotNew = new Quaternion(float.Parse(SCD[3]), float.Parse(SCD[4]), float.Parse(SCD[5]), float.Parse(SCD[6]));
+                scc.gameObject.transform.SetPositionAndRotation(camPosNew, camRotNew);
+
+            }
+           
+            if (GameObject.Find("BGCamera").GetComponent<SecondaryCameraController>().isAngle("3dExamine"))
+            {
+                RenderSettings.fog = false;
+            }
+            else
+            {
+                Debug.Log("Not 3d examine");
+            }
+        }
+        string[] AdditionalFCS = File.ReadAllLines(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "AdditionalData.fcs"));
+        if (GameObject.FindObjectOfType<PostProcessingController>().cg == null)
+        {
+            FindObjectOfType<PostProcessingController>().Start();
+        }
+        
+        GameObject.FindObjectOfType<PostProcessingController>().cg.saturation.value = float.Parse(AdditionalFCS[14]);
+        FCServices.FindChildWithName(GameObject.Find("FadeEffectWhite"), "Panel").GetComponent<Animator>().Play(int.Parse(AdditionalFCS[0]), 0);
+        GameObject.Find("Darkness").GetComponent<Animator>().Play(int.Parse(AdditionalFCS[1]), 0);
+        if (AdditionalFCS[1] == "1767186682")
+        {
+            GameObject.Find("Darkness").GetComponent<Animator>().SetBool("isBGVisible", false);
+        }
+        else
+        {
+            GameObject.Find("Darkness").GetComponent<Animator>().SetBool("isBGVisible", true);
+        }
+
+        if (AdditionalFCS[2] != "NoPicture")
+        {
+            PictureSpawned = Instantiate(GameObject.FindObjectOfType<PrefabController>().FindPrefab(AdditionalFCS[2]), GameObject.Find("Picture").transform);
+        }
+
+        if (AdditionalFCS[3] != "NotExamining")
+        {
+            foreach (Transform child in ExaminedObject.transform)
+            {
+                if (child.name == AdditionalFCS[3])
+                {
+                    child.gameObject.SetActive(true);
+                    child.SetAsFirstSibling();
+                }
+                else
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }
+            if (AdditionalFCS[4] != "NoAnimatorAttached")
+            {
+                ExaminedObject.transform.GetChild(0).gameObject.GetComponent<Animator>().Play(int.Parse(AdditionalFCS[4]), 0);
+            }
+            Quaternion savedRot = new Quaternion(float.Parse(AdditionalFCS[5]), float.Parse(AdditionalFCS[6]), float.Parse(AdditionalFCS[7]), float.Parse(AdditionalFCS[8]));
+            ExaminedObject.transform.rotation = savedRot;
+        }
+        Vector2 pointerAnchorPos = new Vector2(float.Parse(AdditionalFCS[9]), float.Parse(AdditionalFCS[10]));
+        GameObject.FindObjectOfType<FakeCursorController>().gameObject.GetComponent<RectTransform>().anchoredPosition = pointerAnchorPos;
+        if (AdditionalFCS[11] == "True")
+        {
+            isGameOver = true;
+        }
+        else
+        {
+            isGameOver = false;
+        }
+
+        GameObject.FindObjectOfType<PenaltyController>().transform.GetChild(0).gameObject.GetComponent<Animator>().Play(int.Parse(AdditionalFCS[12]), 0);
+        if (GameObject.FindObjectOfType<PenaltyController>().PendingPenalty() != int.Parse(AdditionalFCS[13]))
+        {
+            GameObject.FindObjectOfType<PenaltyController>().ShowPendingPenalty(int.Parse(AdditionalFCS[13]));
+        }
+
 
 
 
@@ -627,7 +716,17 @@ public class ModifyStrings : MonoBehaviour
             foreach (BaseCharacterController chr in GameObject.FindObjectsOfType<BaseCharacterController>())
             {
                 string[] ChrFCS = File.ReadAllLines(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "ChrData", chr.CharacterName + ".fcs"));
-                for (int i = 0; i < chr.gameObject.GetComponent<Animator>().layerCount; i++)
+               
+                if (ChrFCS[0] == "True")
+                {
+                    chr.gameObject.SetActive(true);
+                }
+                else
+                {
+                    chr.gameObject.SetActive(false);
+                }
+                
+                for (int i = 1; i < chr.gameObject.GetComponent<Animator>().layerCount + 1; i++)
                 {
                     chr.gameObject.GetComponent<Animator>().Play(int.Parse(ChrFCS[i]), i);
 
@@ -682,16 +781,18 @@ public class ModifyStrings : MonoBehaviour
                 {
                     if (!FCServices.FindChildWithArray(GameObject.FindObjectOfType<Record>().gameObject, "Image", s))
                     {
-                        if (PrefabController.Instance().FindPrefab(s + "Details") != null)
+                        if (PrefabController.Instance().FindPrefab(s))
                         {
-                            GameObject.FindObjectOfType<Record>().AddEvidence(s, s + "Button", s + "Details");
-                        }
-                        else
-                        {
-                            GameObject.FindObjectOfType<Record>().AddEvidence(s, s + "Button");
-                        }
+                            if (PrefabController.Instance().FindPrefab(s + "Details") != null)
+                            {
+                                GameObject.FindObjectOfType<Record>().AddEvidence(s, s + "Button", s + "Details");
+                            }
+                            else
+                            {
+                                GameObject.FindObjectOfType<Record>().AddEvidence(s, s + "Button");
+                            }
 
-
+                        }
 
 
 
@@ -710,10 +811,11 @@ public class ModifyStrings : MonoBehaviour
                 {
                     if (!FCServices.FindChildWithArray(GameObject.FindObjectOfType<Record>().gameObject, "Image", s))
                     {
+                        if (PrefabController.Instance().FindPrefab(s))
+                        {
+                            GameObject.FindObjectOfType<Record>().AddProfile(s, s + "Button");
 
-                        GameObject.FindObjectOfType<Record>().AddProfile(s, s + "Button");
-
-
+                        }
                     }
 
                     FCServices.FindChildWithArray(GameObject.FindObjectOfType<Record>().gameObject, "Image", s, "Text (1)").GetComponent<Text>().text = File.ReadAllText(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "CourtRecord", s + ".fcs"));
@@ -776,10 +878,7 @@ public class ModifyStrings : MonoBehaviour
 
 
 
-        if (GameObject.FindObjectOfType<DRHP>() != null)
-        {
-            GameObject.FindObjectOfType<DRHP>().gameObject.GetComponent<Slider>().value = float.Parse(lines[12]);
-        }
+
         if (GameObject.FindObjectOfType<PenaltyController>() != null)
         {
             for (int i = 0; i < (5 - float.Parse(MainFCS[12])); i++)
@@ -799,71 +898,9 @@ public class ModifyStrings : MonoBehaviour
             EvidencePoppedUp.GetComponentInChildren<Animator>().Play(int.Parse(MainFCS[14]), 0);
         }
 
-        string[] AdditionalFCS = File.ReadAllLines(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "AdditionalData.fcs"));
-        FCServices.FindChildWithName(GameObject.Find("FadeEffectWhite"), "Panel").GetComponent<Animator>().Play(int.Parse(AdditionalFCS[0]), 0);
-        GameObject.Find("Darkness").GetComponent<Animator>().Play(int.Parse(AdditionalFCS[1]), 0);
-        if (AdditionalFCS[1] == "1767186682")
-        {
-            GameObject.Find("Darkness").GetComponent<Animator>().SetBool("isBGVisible", false);
-        }
-        else
-        {
-            GameObject.Find("Darkness").GetComponent<Animator>().SetBool("isBGVisible", true);
-        }
-
-        if (AdditionalFCS[2] != "NoPicture")
-        {
-            PictureSpawned = Instantiate(GameObject.FindObjectOfType<PrefabController>().FindPrefab(AdditionalFCS[2]), GameObject.Find("Picture").transform);
-        }
-
-        if (AdditionalFCS[3] != "NotExamining")
-        {
-            foreach (Transform child in ExaminedObject.transform)
-            {
-                if (child.name == AdditionalFCS[3])
-                {
-                    child.gameObject.SetActive(true);
-                    child.SetAsFirstSibling();
-                }
-                else
-                {
-                    child.gameObject.SetActive(false);
-                }
-            }
-            if (AdditionalFCS[4] != "NoAnimatorAttached")
-            {
-                ExaminedObject.transform.GetChild(0).gameObject.GetComponent<Animator>().Play(int.Parse(AdditionalFCS[4]), 0);
-            }
-            Quaternion savedRot = new Quaternion(float.Parse(AdditionalFCS[5]), float.Parse(AdditionalFCS[6]), float.Parse(AdditionalFCS[7]), float.Parse(AdditionalFCS[8]));
-            ExaminedObject.transform.rotation = savedRot;
-        }
-        Vector2 pointerAnchorPos = new Vector2(float.Parse(AdditionalFCS[9]), float.Parse(AdditionalFCS[10]));
-        GameObject.FindObjectOfType<FakeCursorController>().gameObject.GetComponent<RectTransform>().anchoredPosition = pointerAnchorPos;
-        if (AdditionalFCS[11] == "True")
-        {
-            isGameOver = true;
-        }
-        else
-        {
-            isGameOver = false;
-        }
-
-        GameObject.FindObjectOfType<PenaltyController>().transform.GetChild(0).gameObject.GetComponent<Animator>().Play(int.Parse(AdditionalFCS[12]), 0);
-        if (GameObject.FindObjectOfType<PenaltyController>().PendingPenalty() != int.Parse(AdditionalFCS[13]))
-        {
-            GameObject.FindObjectOfType<PenaltyController>().ShowPendingPenalty(int.Parse(AdditionalFCS[13]));
-        }
-
-        if (GameObject.FindObjectsOfType<SecondaryCameraController>().Length > 0)
-        {
-            foreach (SecondaryCameraController scc in GameObject.FindObjectsOfType<SecondaryCameraController>())
-            {
-                string[] SCD = File.ReadAllLines(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "SecondaryCamData", scc.name + ".fcs"));
-                Vector3 camPosNew = new Vector3(float.Parse(SCD[0]), float.Parse(SCD[1]), float.Parse(SCD[2]));
-                Quaternion camRotNew = new Quaternion(float.Parse(SCD[3]), float.Parse(SCD[4]), float.Parse(SCD[5]), float.Parse(SCD[6]));
-                scc.gameObject.transform.SetPositionAndRotation(camPosNew, camRotNew);
-            }
-        }
+        
+       
+     
 
         if (File.Exists(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "CEData", "MainCEData.fcs")))
         {
@@ -1062,7 +1099,7 @@ public class ModifyStrings : MonoBehaviour
                 StreamWriter writer1 = new StreamWriter(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "ChrData", chr.CharacterName + ".fcs"));
 
 
-
+                writer1.WriteLine(chr.gameObject.activeSelf);
                 for (int i = 0; i < chr.gameObject.GetComponent<Animator>().layerCount; i++)
                 {
                     writer1.WriteLine(chr.gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(i).shortNameHash);
@@ -1234,10 +1271,10 @@ public class ModifyStrings : MonoBehaviour
         }
         if (ExaminedObject.transform.childCount > 0)
         {
-            writer9.WriteLine(ExaminedObject.transform.GetChild(0).gameObject.name);
-            if (ExaminedObject.transform.GetChild(0).gameObject.GetComponent<Animator>())
+            writer9.WriteLine(activeexamined().name);
+            if (activeexamined().GetComponent<Animator>())
             {
-                writer9.WriteLine(ExaminedObject.transform.GetChild(0).gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).shortNameHash);
+                writer9.WriteLine(activeexamined().GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).shortNameHash);
             }
             else
             {
@@ -1263,7 +1300,8 @@ public class ModifyStrings : MonoBehaviour
         writer9.WriteLine(isGameOver);
         writer9.WriteLine(GameObject.FindObjectOfType<PenaltyController>().transform.GetChild(0).gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).shortNameHash);
         writer9.WriteLine(GameObject.FindObjectOfType<PenaltyController>().PendingPenalty());
-        writer9.Close();
+        writer9.WriteLine(GameObject.FindObjectOfType<PostProcessingController>().cg.saturation.value);
+       writer9.Close();
 
 
         foreach (string path2 in Directory.GetFiles(Path.Combine(Application.persistentDataPath, "Slot" + slotnumber, "BacklogData")))
@@ -1373,7 +1411,17 @@ public class ModifyStrings : MonoBehaviour
 
 
 
-
+    public GameObject activeexamined()
+    {
+        foreach (Transform t in ExaminedObject.transform)
+        {
+            if (t.gameObject.activeSelf)
+            {
+                return t.gameObject;
+            }
+        }
+        return null;
+    }
 
 
 
@@ -1381,6 +1429,7 @@ public class ModifyStrings : MonoBehaviour
     public void Update()
 
     {
+ 
         if (Application.platform != RuntimePlatform.Android) {
             CursorUpdate(); }
 
@@ -1389,6 +1438,8 @@ public class ModifyStrings : MonoBehaviour
             GameObject.Find("Unknown").GetComponent<Text>().enabled = false;
         }
 
+        Debug.Log(Screen.currentResolution.height + " " + Screen.currentResolution.width);
+      
         if (GameObject.Find("CEButtons") != null)
         {
             if (CELine() > 10 && GameObject.Find("CEButtons").GetComponent<Canvas>().enabled == false)
@@ -1650,7 +1701,7 @@ public class ModifyStrings : MonoBehaviour
 
 
 
-        if (isExamining3d)
+        if (isExamining3d && !isAnyMenusOpen())
         {
             if (RenderSettings.fog)
             {
@@ -1663,11 +1714,11 @@ public class ModifyStrings : MonoBehaviour
 
             float fakehorizontal = 0;
             float fakevertical = 0;
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.B))
             {
                 fakehorizontal = -1;
             }
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.M))
             {
                 fakehorizontal = 1;
             }
@@ -1675,11 +1726,11 @@ public class ModifyStrings : MonoBehaviour
             {
                 fakehorizontal = Gamepad.current.rightStick.ReadValue().x;
             }
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.N))
             {
                 fakevertical = -1;
             }
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.H))
             {
                 fakevertical = 1;
             }
@@ -1821,11 +1872,11 @@ public class ModifyStrings : MonoBehaviour
         }
 
 
-        if (!RenderSettings.fog && FCServices.GetComponentFromGameObject<SecondaryCameraController>("BGCamera").WithName("3dExamine").position != GameObject.Find("BGCamera").transform.position)
+        if (!RenderSettings.fog && !GameObject.Find("BGCamera").GetComponent<SecondaryCameraController>().isAngle("3dExamine"))
         {
             RenderSettings.fog = true;
         }
-        if (!RenderSettings.fog && FCServices.GetComponentFromGameObject<SecondaryCameraController>("BGCamera").WithName("3dExamine").position == GameObject.Find("BGCamera").transform.position)
+        if (!RenderSettings.fog && GameObject.Find("BGCamera").GetComponent<SecondaryCameraController>().isAngle("3dExamine"))
         {
             RenderSettings.fog = false;
         }
@@ -2090,7 +2141,16 @@ public class ModifyStrings : MonoBehaviour
         tw.gameObject.GetComponent<Text>().text = "";
         GameObject.Find("ToBeContinued").GetComponent<Canvas>().enabled = true;
     }
-
+    public void HideToBeContinued()
+    {
+        NameBox.enabled = false;
+        EmptyBox.enabled = false;
+        CourtRecordBTN.gameObject.SetActive(false);
+        SaveBTN.gameObject.SetActive(false);
+        nametag.text = "";
+        tw.gameObject.GetComponent<Text>().text = "";
+        GameObject.Find("ToBeContinued").GetComponent<Canvas>().enabled = false;
+    }
     public bool investigatedEverything()
     {
         foreach (InvestigationObject iobj in GameObject.FindObjectsOfType<InvestigationObject>())
@@ -2194,6 +2254,9 @@ public class ModifyStrings : MonoBehaviour
         FCServices.FindChildWithName("Cameras", "BGCamera").GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Char"));
         FCServices.FindChildWithName("Cameras", "BGCamera").GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Desk"));
 
+        FCServices.FindChildWithName("RenderTextures", "Char").SetActive(true);
+        FCServices.FindChildWithName("RenderTextures", "Desk").SetActive(true);
+
         RenderSettings.fogDensity = 0.1f;
         GameObject.Find("Doors").GetComponent<Animator>().SetBool("isOpen", false);
         cams.GetComponent<Refresh>().DoRefresh();
@@ -2233,6 +2296,9 @@ public class ModifyStrings : MonoBehaviour
         FCServices.FindChildWithName("Cameras", "BGCamera").GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Char"));
         FCServices.FindChildWithName("Cameras", "BGCamera").GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Desk"));
         FCServices.FindChildWithName("Cameras", "BGCamera").GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Columns");
+        FCServices.FindChildWithName("RenderTextures", "Char").SetActive(true);
+        FCServices.FindChildWithName("RenderTextures", "Desk").SetActive(true);
+
         RenderSettings.fogDensity = 0.1f;
 
         cams.GetComponent<Refresh>().DoRefresh();
@@ -2545,9 +2611,18 @@ public class ModifyStrings : MonoBehaviour
 
                 if (lines[0] == "[ToBeContinued]")
                 {
-                    FCServices.FindChildWithName(GameObject.Find("FadeEffect2"), "Panel").GetComponent<Animator>().SetTrigger("Cross");
+                     Fader.GetComponent<Animator>().SetTrigger("Cross");
                     Invoke("ShowToBeContinued", 75f / 60f);
                 }
+
+                if (lines[0] == "[HideToBeContinued]")
+                {
+                    Fader.GetComponent<Animator>().SetTrigger("Cross");
+                    Invoke("HideShowToBeContinued", 75f / 60f);
+                }
+
+
+
 
                 if (lines[0] == "[DepthOfFieldOn]")
                 {
@@ -2756,7 +2831,20 @@ public class ModifyStrings : MonoBehaviour
                     nametag.text = "";
                     tw.gameObject.GetComponent<Text>().text = "";
 
-                    this.FindCharacter(lines[1]).gameObject.GetComponent<Animator>().SetTrigger("FadeIn");
+
+                    RawImage fadingchar = GameObject.Find("FadingChar").GetComponent<RawImage>();
+                    fadingchar.color = new Color(1f, 1f, 1f, 0f);
+                    fadingchar.DOColor(new Color(1f, 1f, 1f, 1f), 2f);
+                    this.FindCharacter(lines[1]).gameObject.SetActive(true);
+                    FCServices.ChangeLayerRecursive(this.FindCharacter(lines[1]).gameObject, "FadingChar");
+                    Action afterwards = () =>
+                    {
+                        fadingchar.color = new Color(1f, 1f, 1f, 1f);
+                        FCServices.ChangeLayerRecursive(this.FindCharacter(lines[1]).gameObject, "Char");
+                       
+                        FRMNext();
+                    };
+                    base.StartCoroutine(FCServices.DelayedAction(afterwards, 2f));
 
 
                 }
@@ -2765,9 +2853,21 @@ public class ModifyStrings : MonoBehaviour
                     NameBox.enabled = false;
                     EmptyBox.enabled = false;
                     nametag.text = "";
-                    tw.gameObject.GetComponent<Text>().text = "";
+                    tw.gameObject.GetComponent<Text>().text = ""; this.FindCharacter(lines[1]).gameObject.SetActive(true);
+                    RawImage fadingchar = GameObject.Find("FadingChar").GetComponent<RawImage>();
+                    fadingchar.color = new Color(1f, 1f, 1f, 1f);
+                    fadingchar.DOColor(new Color(1f, 1f, 1f, 0f), 2f);
+                    FCServices.ChangeLayerRecursive(this.FindCharacter(lines[1]).gameObject, "FadingChar");
+                    Action afterwards = () =>
+                    {
+                        fadingchar.color = new Color(1f, 1f, 1f, 1f);
+                        FCServices.ChangeLayerRecursive(this.FindCharacter(lines[1]).gameObject, "Char");
+                        this.FindCharacter(lines[1]).gameObject.SetActive(false);
+                        FRMNext();
+                    };
+                    base.StartCoroutine(FCServices.DelayedAction(afterwards, 2f));
 
-                    this.FindCharacter(lines[1]).gameObject.GetComponent<Animator>().SetTrigger("FadeOut");
+
 
 
                 }
@@ -3320,8 +3420,10 @@ public class ModifyStrings : MonoBehaviour
                     }
                     else
                     {
-                        FCServices.AllAnimatorBoolsToFalse(FindCharacter(lines[1]).gameObject.GetComponent<Animator>());
                         FindCharacter(lines[1]).gameObject.GetComponent<Animator>().SetBool("is" + lines[2], true);
+
+                        FCServices.AllAnimatorBoolsToFalse(FindCharacter(lines[1]).gameObject.GetComponent<Animator>(), "is" + lines[2]);
+                        
                     }
 
                     if (FindCharacter(lines[1]).gameObject.GetComponent<WitnessController>())
@@ -3925,6 +4027,41 @@ public class ModifyStrings : MonoBehaviour
 
                 }
 
+                if (lines[25] == "ChangeLetterTypeDelay")
+                {
+                    if (lines[26] == "Normal")
+                    {
+                        tw.delay = 0.025f;
+                    }
+                    else
+                    {
+                        tw.delay = float.Parse(lines[26]);
+                    }
+                }
+
+                if (lines[25] == "SkipToPose")
+                {
+                 
+                        Action skip = () =>
+                        {
+                            this.FindCharacter(lines[1]).gameObject.GetComponent<Animator>().Play(this.FindCharacter(lines[1]).gameObject.GetComponent<Animator>().GetNextAnimatorStateInfo(0).shortNameHash, 0);
+                        };
+
+               
+                        base.StartCoroutine(FCServices.DoNextFrame(skip));
+                    
+                    
+                }
+                if (lines[25] == "SkipToPoseName")
+                {
+                    this.FindCharacter(lines[1]).gameObject.GetComponent<Animator>().Play(lines[26], 0);
+
+                }
+                if (lines[25] == "SkipToPoseNameCharacter")
+                {
+                    this.FindCharacter(lines[27]).gameObject.GetComponent<Animator>().Play(lines[26], 0);
+
+                }
                 if (lines[25] == "FadeOutDelayed")
                 {
                     Action fadeout = () =>

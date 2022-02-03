@@ -81,7 +81,11 @@ public class FRMCreator : EditorWindow
         DeleteProfile,
         AddProfile,
         UpdateEvidenceSilent,
-        UnknownSpeaker
+        UnknownSpeaker,
+        ChangeLetterTypeDelay,
+        SkipToPose,
+        SkipToPoseName,
+        SkipToPoseNameCharacter
 
 
 
@@ -121,6 +125,7 @@ public class FRMCreator : EditorWindow
         FadeOut2,
         FadeOutWhite,
         ToBeContinued,
+        HideToBeContinued,
         FadeIn,
         FadeInWhite,
         FadeCross,

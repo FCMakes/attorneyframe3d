@@ -44,8 +44,11 @@ public class SaveLoadController : MonoBehaviour
 
     public void ShowReturnToTile()
     {
-        base.gameObject.GetComponents<AudioSource>()[2].Play();
-        FCServices.FindChildWithName(base.gameObject, "ToTitle").SetActive(true);
+        if (!FCServices.GetComponentFromObjectOfType<Canvas>(typeof(OptionsController)).enabled && !FCServices.GetComponentFromObjectOfType<Canvas>(typeof(InstructionsController)).enabled)
+        {
+            base.gameObject.GetComponents<AudioSource>()[2].Play();
+            FCServices.FindChildWithName(base.gameObject, "ToTitle").SetActive(true);
+        }
     }
 
 

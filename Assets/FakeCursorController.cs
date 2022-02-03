@@ -205,17 +205,11 @@ public class FakeCursorController : MonoBehaviour
             }
             else
             {
-                if (!GameObject.FindObjectOfType<ModifyStrings>().isExamining3d)
-                {
+                
                     base.gameObject.GetComponent<RectTransform>().position += new Vector3(Input.GetAxis("Horizontal") * speed * Time.deltaTime * (Screen.width / 1920f), Input.GetAxis("Vertical") * Time.deltaTime * speed * (Screen.height / 1080f));
-                }
-                else
-                {
-                    if (Gamepad.current != null)
-                    {
-                        base.gameObject.GetComponent<RectTransform>().position += new Vector3(Gamepad.current.leftStick.ReadValue().x * speed * Time.deltaTime * (Screen.width / 1920f), Gamepad.current.leftStick.ReadValue().y * Time.deltaTime * speed * (Screen.height / 1080f));
-                    }
-                }
+               
+                   
+                
                
 
                 if (Input.GetKeyDown(KeyCode.Mouse0) && !FCServices.isMouseOverClickableUI())

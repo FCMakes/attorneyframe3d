@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Court_06_BM.tex
-  m_Shader: {fileID: 4800000, guid: e5c4f772494693d47b3d00ad0a9b8d05, type: 3}
+  m_Shader: {fileID: 4800000, guid: 0f1775a1d54e86246aac7b7fcfbd3b3f, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0

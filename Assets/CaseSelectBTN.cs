@@ -20,7 +20,10 @@ public class CaseSelectBTN : FCMakes.LazyPort.ButtonInputManager
     public IEnumerator LoadSceneFromBundle()
     {
         yield return new WaitForSeconds(1f);
-        Directory.Delete(Path.Combine(Application.persistentDataPath, "Slot0"), true);
+        if (Directory.Exists(Path.Combine(Application.persistentDataPath, "Slot0")))
+        {
+            Directory.Delete(Path.Combine(Application.persistentDataPath, "Slot0"), true);
+        }
         Instantiate(GameObject.FindObjectOfType<PrefabController>().FindPrefab("FadeEffect4"));
         yield return new WaitForSeconds(1.5f);
         AssetBundle toloadfrom;

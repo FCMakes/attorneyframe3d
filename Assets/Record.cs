@@ -1061,6 +1061,71 @@ public class Record : MonoBehaviour
         Switch();
         Switch();
     }
+    public void RemoveEvidenceImmediate(string name)
+    {
+        int evid = EvidenceIdByName(name);
+        DestroyImmediate(EvidenceList[evid - 1]);
+        List<GameObject> newevl = new List<GameObject>();
+        foreach (GameObject gob in EvidenceList)
+        {
+            if (gob != null && EvidenceList.IndexOf(gob) != evid - 1)
+            {
+                newevl.Add(gob);
+            }
+        }
+        EvidenceList = newevl;
+
+        foreach (EvidenceSelect es in FCServices.GetAllObjectsOfTypeInScene<EvidenceSelect>())
+        {
+            if (es != null)
+            {
+                if (es.ToSelect == evid && es.thistype == EvidenceSelect.selecttype.Evidence)
+                {
+                    DestroyImmediate(es.gameObject);
+                }
+                else
+                {
+                    if (es.ToSelect > evid && es.thistype == EvidenceSelect.selecttype.Evidence)
+                    {
+                        es.ToSelect -= 1;
+                    }
+                    es.gameObject.GetComponent<RectTransform>().localPosition = buttonposgeneral(es.ToSelect);
+                }
+            }
+        }
+        Switch();
+        Switch();
+    }
+    public void RemoveProfileImmediate(string name)
+    {
+        int evid = ProfileIdByName(name);
+        DestroyImmediate(ProfilesList[evid - 1]);
+        List<GameObject> newevl = new List<GameObject>();
+        foreach (GameObject gob in ProfilesList)
+        {
+            if (gob != null && ProfilesList.IndexOf(gob) != evid - 1)
+            {
+                newevl.Add(gob);
+            }
+        }
+        ProfilesList = newevl;
+
+        foreach (EvidenceSelect es in FCServices.GetAllObjectsOfTypeInScene<EvidenceSelect>())
+        {
+            if (es.ToSelect == evid && es.thistype == EvidenceSelect.selecttype.Profiles)
+            {
+                DestroyImmediate(es.gameObject);
+            }
+            if (es.ToSelect > evid && es.thistype == EvidenceSelect.selecttype.Profiles)
+            {
+                es.ToSelect -= 1;
+            }
+            es.gameObject.GetComponent<RectTransform>().localPosition = buttonposgeneral(es.ToSelect);
+
+        }
+        Switch();
+        Switch();
+    }
     public int PageOfEvidence(int Id)
     {
         if (Id / 5 == (float)Id / 5f)

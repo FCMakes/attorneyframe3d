@@ -108,11 +108,11 @@ public class EvidenceCreator : EditorWindow
         {
             if (thistype == EvidenceSelect.selecttype.Evidence)
             {
-                GameObject.FindObjectOfType<Record>().RemoveEvidence(EvidenceName);
+                GameObject.FindObjectOfType<Record>().RemoveEvidenceImmediate(EvidenceName);
             }
             else
             {
-                GameObject.FindObjectOfType<Record>().RemoveProfile(EvidenceName);
+                GameObject.FindObjectOfType<Record>().RemoveProfileImmediate(EvidenceName);
             }
         }
 

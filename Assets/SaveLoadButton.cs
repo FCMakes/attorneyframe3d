@@ -15,24 +15,27 @@ public class SaveLoadButton : FCMakes.LazyPort.ButtonInputManager
 
     public void Update()
     {
-        if (GetKeyDown && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "Confirm").activeSelf && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle") || GetKeyDown && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "Confirm").activeSelf && FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle") && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle"))
+        if (!GameObject.FindObjectOfType<OptionsController>().gameObject.GetComponent<Canvas>().enabled && !GameObject.FindObjectOfType<InstructionsController>().gameObject.GetComponent<Canvas>().enabled && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "Confirm").activeSelf && FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle") != null && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle").activeSelf || !GameObject.FindObjectOfType<OptionsController>().gameObject.GetComponent<Canvas>().enabled && !GameObject.FindObjectOfType<InstructionsController>().gameObject.GetComponent<Canvas>().enabled && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "Confirm").activeSelf && FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle") == null)
         {
-            if (GameObject.FindObjectOfType<SaveLoadController>().gameObject.name == "Load" && base.gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text == "No data.")
+
+            if (GetKeyDown && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "Confirm").activeSelf && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle") || GetKeyDown && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "Confirm").activeSelf && FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle") && !FCServices.FindChildWithName(GameObject.FindObjectOfType<SaveLoadController>().gameObject, "ToTitle"))
             {
-                GameObject.FindObjectOfType<SaveLoadController>().gameObject.GetComponents<AudioSource>()[4].Play();
+                if (GameObject.FindObjectOfType<SaveLoadController>().gameObject.name == "Load" && base.gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text == "No data.")
+                {
+                    GameObject.FindObjectOfType<SaveLoadController>().gameObject.GetComponents<AudioSource>()[4].Play();
+                }
+                else
+                {
+                    GameObject.FindObjectOfType<SaveLoadController>().ShowConfirmation(base.gameObject.GetComponent<Button>());
+                }
+
             }
-            else
+
+            if (GetKeyUp && GameObject.FindObjectOfType<SaveLoadController>().gameObject.name == "Save")
             {
                 GameObject.FindObjectOfType<SaveLoadController>().ShowConfirmation(base.gameObject.GetComponent<Button>());
             }
-          
         }
-
-        if (GetKeyUp && GameObject.FindObjectOfType<SaveLoadController>().gameObject.name == "Save")
-        {
-            GameObject.FindObjectOfType<SaveLoadController>().ShowConfirmation(base.gameObject.GetComponent<Button>());
-        }
-
     }
 
     public void UpdateInfo()
